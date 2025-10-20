@@ -9,6 +9,9 @@ import dotenv from 'dotenv';
 // Charger les variables d'environnement
 dotenv.config();
 
+// Import des routes
+import { authRoutes } from './auth.routes';
+
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
@@ -35,46 +38,13 @@ app.use(limiter);
 // Middleware pour parser le JSON
 app.use(express.json({ limit: '10mb' }));
 
+// Routes de l'API
+app.use('/api/auth', authRoutes);
+
 // Routes de base
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    service: 'HILFE Backend'
-  });
-});
-
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'HILFE Platform API',
-    version: '1.0.0',
-    status: 'running'
-  });
-});
-
-// Gestion des erreurs 404
-app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
-});
-
-// Gestion des erreurs globales
-app.use((error: any, req: any, res: any, next: any) => {
-  console.error('Error:', error);
-  res.status(500).json({ error: 'Internal server error' });
-});
-
-// WebSocket connections
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
-  
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
-  });
-});
-
-// Démarrer le serveur
-const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => {
-  console.log(`🚀 HILFE Backend running on port ${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
-});
+    service: 'HILFE Backend',
+    version: '1.
